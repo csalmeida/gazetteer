@@ -1,19 +1,53 @@
+//! This module provides a comprehensive list of countries with their associated attributes.
+//!
+//! It includes a `Country` struct that represents a country with various identifying attributes
+//! and geographical information. The module also provides an `all()` function that returns
+//! a vector containing all defined countries.
+//!
+//! The country data is based on the ISO 3166-1 standard and includes additional geographical
+//! classifications.
 pub mod countries {
+  /// Represents a country with various identifying attributes and geographical information.
+  ///
+  /// This struct encapsulates details about a country, including its name, ISO codes,
+  /// geographical classifications, and regional information.
+  ///
+  /// # Fields
+  ///
+  /// * `name` - The full name of the country.
+  /// * `alpha_2` - The ISO 3166-1 alpha-2 code (two-letter country code).
+  /// * `alpha_3` - The ISO 3166-1 alpha-3 code (three-letter country code).
+  /// * `country_code` - The ISO 3166-1 numeric code.
+  /// * `iso_3166_2` - The ISO 3166-2 code, if available.
+  /// * `region` - The geographical region of the country.
+  /// * `region_code` - The code for the geographical region, if available.
+  /// * `sub_region` - The geographical sub-region of the country.
+  /// * `sub_region_code` - The code for the geographical sub-region, if available.
+  /// * `intermediate_region` - The intermediate region, if applicable.
+  /// * `intermediate_region_code` - The code for the intermediate region, if available.
   #[derive(Debug, Clone, PartialEq)]
   pub struct Country {
-    name: String,
-    alpha_2: String,
-    alpha_3: String,
-    country_code: u16,
-    iso_3166_2: Option<String>,
-    region: String,
-    region_code: Option<u16>,
-    sub_region: String,
-    sub_region_code: Option<u16>,
-    intermediate_region: Option<String>,
-    intermediate_region_code: Option<u16>,
+    pub name: String,
+    pub alpha_2: String,
+    pub alpha_3: String,
+    pub country_code: u16,
+    pub iso_3166_2: Option<String>,
+    pub region: String,
+    pub region_code: Option<u16>,
+    pub sub_region: String,
+    pub sub_region_code: Option<u16>,
+    pub intermediate_region: Option<String>,
+    pub intermediate_region_code: Option<u16>,
   }
 
+  /// Returns a vector containing all the countries defined in this module, a total of 249.
+  ///
+  /// Each country is represented by a `Country` struct, which includes
+  /// information such as the country's name, ISO codes, region, and more.
+  ///
+  /// # Returns
+  ///
+  /// A `Vec<Country>` containing all defined countries.
   pub fn all() -> Vec<Country> {
       vec![
           Country {
@@ -3255,6 +3289,33 @@ pub mod countries {
           },
       ]
   }
+
+  /// Finds a country that matches the given predicate.
+  ///
+  /// # Arguments
+  ///
+  /// * `predicate` - A closure that takes a reference to a `Country` and returns a boolean.
+  ///
+  /// # Returns
+  ///
+  /// An `Option<Country>` containing the first country that matches the predicate,
+  /// or `None` if no country matches.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// let usa = countries::find_by(|c| c.alpha_2 == "US");
+  /// assert_eq!(usa.unwrap().name, "United States of America");
+  ///
+  /// let france = countries::find_by(|c| c.country_code == 250);
+  /// assert_eq!(france.unwrap().name, "France");
+  /// ```
+  pub fn find_by<F>(predicate: F) -> Option<Country>
+  where
+      F: Fn(&Country) -> bool,
+  {
+      all().into_iter().find(|country| predicate(country))
+  }
 }
 
 #[cfg(test)]
@@ -3272,5 +3333,32 @@ mod tests {
             expected_countries_count,
             countries_count
         );
+    }
+
+    #[test]
+    fn find_country_by_property() {
+        // Test finding by alpha_2
+        let us = countries::find_by(|c| c.alpha_2 == "US").unwrap();
+        assert_eq!(us.name, "United States of America");
+
+        // Test finding by alpha_3
+        let canada = countries::find_by(|c| c.alpha_3 == "CAN").unwrap();
+        assert_eq!(canada.name, "Canada");
+
+        // Test finding by country code
+        let france = countries::find_by(|c| c.country_code == 250).unwrap();
+        assert_eq!(france.name, "France");
+
+        // Test finding by name
+        let japan = countries::find_by(|c| c.name == "Japan").unwrap();
+        assert_eq!(japan.alpha_2, "JP");
+
+        // Test finding by region
+        let australia = countries::find_by(|c| c.name == "Australia" && c.region == "Oceania").unwrap();
+        assert_eq!(australia.alpha_3, "AUS");
+
+        // Test finding non-existent country
+        let non_existent = countries::find_by(|c| c.alpha_2 == "XX");
+        assert!(non_existent.is_none());
     }
 }
