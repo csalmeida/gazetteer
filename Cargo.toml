@@ -4,5 +4,6 @@ version = "0.0.1"
 edition = "2021"
 description = "Lists metadata on all 249 countries and territories. It focuses on country data based on the ISO 3166-1 standard with Alpha 2 and Alpha 3 codes, includes additional geographical classifications."
 license = "MIT"
+repository = "https://github.com/csalmeida/gazetteer"
 
 [dependencies]
