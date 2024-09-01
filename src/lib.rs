@@ -3304,6 +3304,7 @@ pub mod countries {
   /// # Examples
   ///
   /// ```
+  /// use gazetteer::countries;
   /// let usa = countries::find_by(|c| c.alpha_2 == "US");
   /// assert_eq!(usa.unwrap().name, "United States of America");
   ///
