@@ -41,3 +41,53 @@ Documentation:
 ```console
 cargo doc --open
 ```
+
+## Usage
+
+Add the crate as a dependency:
+
+```console
+cargo add gazetteer
+```
+
+A few examples of how to use the Gazetteer's methods:
+
+```rust
+use gazetteer::countries;
+
+fn main() {
+    // Get all countries
+    let all_countries = countries::all();
+    println!("Total number of countries: {}", all_countries.len());
+
+    // Find a country by its alpha-2 code
+    let usa = countries::find_by(|c| c.alpha_2 == "US").unwrap();
+    println!("Country name: {}", usa.name);
+    println!("Alpha-3 code: {}", usa.alpha_3);
+    println!("Country code: {}", usa.country_code);
+
+    // Find a country by its name
+    let japan = countries::find_by(|c| c.name == "Japan").unwrap();
+    println!("Japan's region: {}", japan.region);
+    println!("Japan's sub-region: {}", japan.sub_region);
+
+    // Find countries in a specific region
+    let european_countries: Vec<_> = countries::all()
+        .into_iter()
+        .filter(|c| c.region == "Europe")
+        .collect();
+    println!("Number of European countries: {}", european_countries.len());
+
+    // Find a country by its numeric code
+    let france = countries::find_by(|c| c.country_code == 250).unwrap();
+    println!("Country with code 250: {}", france.name);
+
+    // Check if a country has an intermediate region
+    let brazil = countries::find_by(|c| c.alpha_3 == "BRA").unwrap();
+    if let Some(region) = &brazil.intermediate_region {
+        println!("Brazil's intermediate region: {}", region);
+    } else {
+        println!("Brazil has no intermediate region");
+    }
+}
+```
